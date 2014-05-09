@@ -101,3 +101,5 @@ Example:
 		15585 // how many days am i old unitl today
 
 dateCalendar has some unitTests using QUnit, to start the unitTests, just open dateCalendarTests.html in your browser. unitTest methods are in dateCalendarTests.js
+
+Local could be in addition to English and Persian enhanced to arabic and hebrew. for colaboration or any issues please contact me at @bahramMaravandi

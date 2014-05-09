@@ -1,5 +1,4 @@
 ﻿/*
-
 	Name: dateCalendar version 1.0
     Description: dateCalendar extends the Date object with Jalali, Hebrew and Islamic calendar. 
                  Conversion from a base calendar defined in CalendarType to all supported calendars is added.
@@ -8,6 +7,7 @@
                  TotalJulianDaysUtilToday and until a given date is added.
 	Developer : Bahram Maravandi - @bahramMaravandi
 	Lastupdate: 09-05-2014
+    Documentation: ReadMe.md
 
 */
 
@@ -543,7 +543,6 @@ var Resources = {
                                 break;
 
                         }
-
                         break;
                     case CalendarType.Islamic:
                         switch (format) {
@@ -551,7 +550,6 @@ var Resources = {
                             case DisplayFormat.Short:
                                 dayNames = new Array("al-'ahad", "al-'ithnayn", "ath-thalatha'", "al-'arb`a'", "al-khamis", "al-jum`a", "as-sabt");
                                 break;
-                            
                         }
                         break;
                     case CalendarType.Hebrew:
@@ -560,7 +558,6 @@ var Resources = {
                             case DisplayFormat.Short:
                                 dayNames = new Array("Yom Rishon", "Yom Sheini", "Yom Shlishi", "Yom R'vi'i", "Yom Chamishi", "Yom Shishi", "Yom Shabbat");
                                 break;
-
                         }
                         break;
                 }
@@ -583,7 +580,6 @@ var Resources = {
                                 dayNames = new Array("یکشنبه", "دوشنبه", "سه شنبه", "چهارشنبه", "پنجشنبه", "جمعه", "شنبه");
                                 break;
                         }
-
                         break;
                     case CalendarType.Islamic:
                         switch (format) {
@@ -591,7 +587,6 @@ var Resources = {
                             case DisplayFormat.Short:
                                 dayNames = new Array("الأحد‬", "‫الاثنين", "الثلاثاء‬", "‫الأربعاء", "الخميس‬", "الجمعة‬", "السبت‬");
                                 break;
-                            
                         }
                         break;
                     case CalendarType.Hebrew:
@@ -600,7 +595,6 @@ var Resources = {
                             case DisplayFormat.Short:
                                 dayNames = new Array("یوم ریشون", "یوم شینی", "یوم شلیشی", "یوم اروی", "یوم چامیشی", "یوم شیشی", "یوم شابات");
                                 break;
-
                         }
                         break;
                 }
@@ -702,7 +696,6 @@ var Resources = {
                                 monthNames = new Array("نیسان", "یار", "سیوان", "تموز", "آو", "اِلول", "تیشری", "حِشوان", "کیسلِو", "طِوِت", "شِواط", "اَدار ۱", "اَدار ۲");
                                 break;
                         }
-
                         break;
                 }
                 break;
