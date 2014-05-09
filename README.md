@@ -3,8 +3,7 @@ dateCalendar
 
 dateCalendar HowTo and documentation, by @bahramMaravandi 
 
-
-dateCalendar extends the Date object which is based on Gregorian Calendar to Jalali, Islamic and Hebrew Calendar. Each Calendar (CalendarType) could be set after creating a new instance of Date
+dateCalendar extends the Date object, which is based on Gregorian Calendar, to Jalali, Islamic and Hebrew Calendars. Each Calendar (CalendarType) can be set after creating a new instance of Date.
 
 Example: 
 
@@ -103,4 +102,4 @@ Example:
 
 dateCalendar has some unitTests using QUnit, to start the unitTests, just open dateCalendarTests.html in your browser. unitTest methods are in dateCalendarTests.js
 
-Local could be in addition to English and Persian enhanced to arabic and hebrew. for colaboration or any issues please contact me at @bahramMaravandi
+In addition to English and Persian, the Local could be also enhanced to arabic and hebrew. For collaboration or any issues please contact me at @bahramMaravandi
