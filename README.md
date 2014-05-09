@@ -86,7 +86,8 @@ Example:
 
 	Each date has also the method toJulianDay() and isLeapYear()
 
-	With totalJulianDaysUntilToday() and totalJulianDaysUntil(aDate) methods it is possible to calculate the total days count between to events
+	With totalJulianDaysUntilToday() and totalJulianDaysUntil(aDate) methods 
+		it is possible to calculate the total days count between two events
 
 	Example:
 
