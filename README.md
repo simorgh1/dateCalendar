@@ -1,7 +1,9 @@
 dateCalendar
 ============
 
-dateCalendar HowTo and documentation, by @bahramMaravandi 
+dateCalendar HowTo and documentation, 
+by @bahramMaravandi ,
+slideshare http://goo.gl/pzYNQb 
 
 dateCalendar extends the Date object, which is based on Gregorian Calendar, to Jalali, Islamic and Hebrew Calendars. Each Calendar (CalendarType) can be set after creating a new instance of Date.
 
@@ -51,17 +53,17 @@ Example:
 
 	jalaliDate.toLocalizedString(Local.Afghan)
 
-	سه شنبه ۱۹ ثور ۱۳۹۳
+	جمعه ۱۹ ثور ۱۳۹۳
 
 	there are two special calendars for Jalali calendar
 
 	jalaliDate.toLocalizedString(Local.Persian, CalendarType.Jalali, DisplayFormat.Long, SpecialCalendar.Royal)
 
-	سه شنبه ۱۹ اردیبهشت ۲۵۷۳
+	جمعه ۱۹ اردیبهشت ۲۵۷۳
 
 	jalaliDate.toLocalizedString(Local.Persian, CalendarType.Jalali, DisplayFormat.Long, SpecialCalendar.Iranian)
 
-	سه شنبه ۱۹ اردیبهشت ۳۷۳۹
+	جمعه ۱۹ اردیبهشت ۳۷۳۹
 
 	var islamicDate = new Date("1435-07-09");
 	islamicDate.setCalendarType(CalendarType.Islamic);
