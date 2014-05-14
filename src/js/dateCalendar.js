@@ -664,7 +664,7 @@ var Resources = {
                         switch (format) {
                             case DisplayFormat.Long:
                             case DisplayFormat.Short:
-                                monthNames = new Array("ژانویه", "فوریه", "مارس", "آوریل", "می", "جون", "جولای", "آگوست", "سپتامبر", "اکتبر", "نوامبر", "دسامبر");
+                                monthNames = new Array("ژانویه", "فوریه", "مارس", "آوریل", "مه", "ژوئن", "ژوئیه", "اوت", "سپتامبر", "اکتبر", "نوامبر", "دسامبر");
                                 break;
                         }
                         break;
@@ -706,7 +706,7 @@ var Resources = {
                         switch (format) {
                             case DisplayFormat.Long:
                             case DisplayFormat.Short:
-                                monthNames = new Array("ژانویه", "فوریه", "مارس", "آوریل", "می", "جون", "جولای", "آگوست", "سپتامبر", "اکتبر", "نوامبر", "دسامبر");
+                                monthNames = new Array("ژانویه", "فوریه", "مارس", "آوریل", "مه", "ژوئن", "ژوئیه", "اوت", "سپتامبر", "اکتبر", "نوامبر", "دسامبر");
                                 break;
                         }
                         break;
