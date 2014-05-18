@@ -1,25 +1,22 @@
-dateCalendar
+DateCalendar
 ============
 
-dateCalendar HowTo and documentation, 
+DateCalendar HowTo and documentation, 
 by @bahramMaravandi ,
 slideshare http://goo.gl/pzYNQb 
 
-dateCalendar extends the Date object, which is based on Gregorian Calendar, to Jalali, Islamic and Hebrew Calendars. Each Calendar (CalendarType) can be set after creating a new instance of Date.
+DateCalendar is a date class with multiple calendar support and conversion for Jalali, Islamic and Hebrew Calendars.
+Standard Date class supports Gregorian Calendar and has no conversion support and uses the system local settings.
 
 Example: 
 
-	var jalaliDate = new Date("1393-02-19");
-	jalaliDate.setCalendarType(CalendarType.Jalali);
+	var jalaliDate = new DateCalendar("1393-02-19", CalendarType.Jalali);
 
-	var islamicDate = new Date("1435-07-05");
-	islamicDate.setCalendarType(CalendarType.Islamic);
+	var islamicDate = new DateCalendar("1435-07-05", CalendarType.Islamic);
 
-	var hebrewDate = new Date("5774-02-09");
-	hebrewDate.setCalendarType(CalendarType.Hebrew);
+	var hebrewDate = new DateCalendar("5774-02-09", CalendarType.Hebrew);
 
-	var date = new Date("2014-05-09");
-	date.setCalendarType(CalendarType.Gregorian);  // CalendarType.Gregorian is the default CalendarType
+	var date = new DateCalendar("2014-05-09", CalendarType.Gregorian);
 
 Every date object with the defined CalendarType could be converted to other CalendarTypes
 
