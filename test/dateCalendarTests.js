@@ -1,79 +1,52 @@
 ﻿/// <reference path="../src/js/dateCalendar.js" />
 
-test("DateCalendar type Test", function () {
+test("Initialize DateCalendar no-param", function () {
 
-    var dc = new Date();
+    var dateCal = new DateCalendar();
+    var today = new Date();
 
-    dc.setCalendarType(CalendarType.Jalali);
-
-    var res = dc.getCalendarType();
-
-    equal(res, CalendarType.Jalali, "Should be Jalali");
-
-});
-
-test("Convert a Jalali Date to Gregorian", function () {
-
-    var dcal = new Date("1393-02-15");
-    dcal.setCalendarType(CalendarType.Jalali);
-
-    var gregDate = dcal.toGregorian();
-
-    equal(gregDate.getFullYear(), 2014, "Year 2014");
-    equal(gregDate.getMonth() +1, 5, "Month 5");
-    equal(gregDate.getDate(), 5, "Day 5");
+    equal(dateCal.getFullYear(), today.getFullYear(), "Should be Year " + dateCal.getFullYear());
+    equal(dateCal.getMonth(), today.getMonth() + 1, "Should be Month " + dateCal.getMonth());
+    equal(dateCal.getDate(), today.getDate(), "Should be Day " + dateCal.getDate());
 
 });
 
-test("Convert a Gregorian Date to Jalali", function () {
+test("Initialize Gregorian DateCalendar with param", function () {
 
-    var dcal = new Date("2014-05-05");
-    dcal.setCalendarType(CalendarType.Gregorian);
+    var dateCal = new DateCalendar("2014-05-18", CalendarType.Gregorian);
+    var today = new Date("2014-05-18");
 
-    var jalaliDate = dcal.toJalali();
-
-    equal(jalaliDate.getFullYear(), 1393, "Year 1393");
-    equal(jalaliDate.getMonth() + 1, 2, "Month 2");
-    equal(jalaliDate.getDate(), 15, "Day 15");
-
+    equal(dateCal.getFullYear(), today.getFullYear(), "Should be Year " + dateCal.getFullYear());
+    equal(dateCal.getMonth(), today.getMonth() + 1, "Should be Month " + dateCal.getMonth());
+    equal(dateCal.getDate(), today.getDate(), "Should be Day " + dateCal.getDate());
 });
 
-test("Convert a Gregorian Date to Islamic", function () {
+test("Initialize Gregorian DateCalendar - convert to Jalali", function () {
 
-    var dcal = new Date("2014-05-05");
-    dcal.setCalendarType(CalendarType.Gregorian);
+    var dateCal = new DateCalendar("2014-05-18", CalendarType.Gregorian);
+    var jalaliDateCal = dateCal.toJalali();
 
-    var islamicDate = dcal.toIslamic();
-
-    equal(islamicDate.getFullYear(), 1435, "Year 1435");
-    equal(islamicDate.getMonth() + 1, 7, "Month 7");
-    equal(islamicDate.getDate(), 5, "Day 5");
-
+    equal(jalaliDateCal.getFullYear(), 1393, "Should be Year 1393");
+    equal(jalaliDateCal.getMonth(), 2, "Should be Month 2");
+    equal(jalaliDateCal.getDate(), 28, "Should be Day 28");
 });
 
-test("Convert a Gregorian Date to Hebrew", function () {
+test("Initialize Gregorian DateCalendar - convert to Islamic", function () {
 
-    var dcal = new Date("2014-05-09");
-    dcal.setCalendarType(CalendarType.Gregorian);
+    var dateCal = new DateCalendar("2014-05-18", CalendarType.Gregorian);
+    var islamicDateCal = dateCal.toIslamic();
 
-    var hebrewDate = dcal.toHebrew();
-
-    equal(hebrewDate.getFullYear(), 5774, "Year 5774");
-    equal(hebrewDate.getMonth() + 1, 2, "Month 2 lyyar");
-    equal(hebrewDate.getDate(), 9, "Day 9");
-
+    equal(islamicDateCal.getFullYear(), 1435, "Should be Year 1435");
+    equal(islamicDateCal.getMonth(), 7, "Should be Month 7 , Rajab");
+    equal(islamicDateCal.getDate(), 18, "Should be Day 18");
 });
 
-test("Count of Julian days until a date", function () {
+test("Initialize Gregorian DateCalendar - convert to Hebrew", function () {
 
-    var today = new Date("2014-05-09");
-    today.setCalendarType(CalendarType.Gregorian);
+    var dateCal = new DateCalendar("2014-05-18", CalendarType.Gregorian);
+    var hebrewDateCal = dateCal.toHebrew();
 
-    var fromDate = new Date("2013-01-06");
-    fromDate.setCalendarType(CalendarType.Gregorian);
-
-    var diff = fromDate.totalJulianDaysUntil(today);
-
-    equal(diff, 488, "488 days");
-
+    equal(hebrewDateCal.getFullYear(), 5774, "Should be Year 5774");
+    equal(hebrewDateCal.getMonth(), 2, "Should be Month 2 , Iyyar");
+    equal(hebrewDateCal.getDate(), 18, "Should be Day 18");
 });

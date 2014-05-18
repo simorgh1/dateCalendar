@@ -11,355 +11,443 @@
 
 */
 
-Date.prototype.setCalendarType = function (calendarType) {
+function DateCalendar(date, calendarType) {
 
-    this.calendarType = calendarType;
-
-}
-
-Date.prototype.getCalendarType = function () {
-
-    // Gregorian is the defualt calendar type
-    if (this.calendarType == undefined) {
-        this.calendarType = CalendarType.Gregorian;
-        //console.log('Default Gregorian CalendarType is used.')
+    function myDate(y, m, d, w) {
+        this.Year = y;
+        this.Month = m;
+        this.Day = d;
+        this.WeekDay = w;
     }
 
-    return this.calendarType;
-}
+    var _calendarType;
+    var _local;
+    var _special;
+    var _format;
+    var convertedDate;
+    var _year, _month, _day, _weekDay;
+    var inputDate;
 
-// Converts the current date with the specified CalendarType to gregorian Date
-Date.prototype.toGregorian = function () {
+    if (date == undefined) {
+        var today = new Date();
 
-    var wjd, depoch, quadricent, dqc, cent, dcent, quad, dquad, yindex, dyindex, year, yearday, leapadj;
-
-    var jd = this.toJulianDay();
-    var weekDay = Utils.julianWeekDay(jd);
-
-    wjd = Math.floor(jd - 0.5) + 0.5;
-    depoch = wjd - Epoch.Gregorian.value;
-    quadricent = Math.floor(depoch / 146097);
-    dqc = Utils.mod(depoch, 146097);
-    cent = Math.floor(dqc / 36524);
-    dcent = Utils.mod(dqc, 36524);
-    quad = Math.floor(dcent / 1461);
-    dquad = Utils.mod(dcent, 1461);
-    yindex = Math.floor(dquad / 365);
-    year = (quadricent * 400) + (cent * 100) + (quad * 4) + yindex;
-
-    if (!((cent == 4) || (yindex == 4))) {
-        year++;
-    }
-
-    // first day of Year
-    var aDate = new Date(year, 0, 1);
-
-    aDate.setCalendarType(CalendarType.Gregorian);
-
-    yearday = wjd - aDate.toJulianDay();
-
-    // first day of March
-    aDate.setMonth(2);
-
-    leapadj = ((wjd < aDate.toJulianDay()) ? 0 : (aDate.isLeapYear() ? 1 : 2));
-
-    var month = Math.floor((((yearday + leapadj) * 12) + 373) / 367);
-
-    // set first day of Month
-    aDate.setMonth(month - 1);
-
-    day = (wjd - aDate.toJulianDay()) + 1;
-
-    aDate.setDate(day);
-    aDate.weekDay = weekDay;
-
-    return aDate;
-}
-
-// Converts the current date with the specified CalendarType to jalali Date
-Date.prototype.toJalali = function () {
-
-    var jd, year, month, day, depoch, cycle, cyear, ycycle, aux1, aux2, yday;
-
-    //  Update Julian day
-    jd = this.toJulianDay() +
-           (Math.floor(0 + 60 * (0 + 60 * 0) + 0.5) / 86400.0);
-
-    var weekDay = Utils.julianWeekDay(jd);
-
-    jd = Math.floor(jd) + 0.5;
-
-    // first day of year 475
-    var aDate = new Date(475, 0, 1);
-    aDate.setCalendarType(CalendarType.Jalali);
-
-    depoch = jd - aDate.toJulianDay();
-    cycle = Math.floor(depoch / 1029983);
-    cyear = Utils.mod(depoch, 1029983);
-
-    if (cyear == 1029982) {
-        ycycle = 2820;
+        inputDate = new myDate(today.getFullYear(), today.getMonth() + 1, today.getDate(), today.getDay());
+        _calendarType = CalendarType.Gregorian;
     }
     else {
-        aux1 = Math.floor(cyear / 366);
-        aux2 = Utils.mod(cyear, 366);
-        ycycle = Math.floor(((2134 * aux1) + (2816 * aux2) + 2815) / 1028522) +
-                    aux1 + 1;
-    }
-    year = ycycle + (2820 * cycle) + 474;
 
-    if (year <= 0) {
-        year--;
-    }
+        //todo validate date
+        if (calendarType == undefined)
+            _calendarType = CalendarType.Gregorian;
+        else
+            _calendarType = calendarType;
 
-    aDate.setYear(year);
-    yday = (jd - aDate.toJulianDay()) + 1;
-    month = (yday <= 186) ? Math.ceil(yday / 31) : Math.ceil((yday - 6) / 30);
+        var tmpDate = date.split("-");
 
-    aDate.setMonth(month - 1);
-    day = (jd - aDate.toJulianDay()) + 1;
+        inputDate = new myDate(parseInt(tmpDate[0]), parseInt(tmpDate[1]), parseInt(tmpDate[2]));
 
-    aDate.setDate(day);
-    aDate.weekDay = weekDay;
-
-    return aDate;
-}
-
-// Converts the current date with the specified CalendarType to islamic date
-Date.prototype.toIslamic = function () {
-
-    var jd, year, month, day;
-
-    jd = Math.floor(this.toJulianDay()) + 0.5;
-
-    var weekDay = Utils.julianWeekDay(jd);
-
-    year = Math.floor(((30 * (jd - Epoch.Islamic.value)) + 10646) / 10631);
-
-    // first day of current year
-    var aDate = new Date(year, 0, 1);
-    aDate.setCalendarType(CalendarType.Islamic);
-
-    month = Math.min(12,
-            Math.ceil((jd - (29 + aDate.toJulianDay())) / 29.5) + 1);
-    aDate.setMonth(month - 1);
-
-    day = (jd - aDate.toJulianDay()) + 1;
-    aDate.setDate(day);
-    aDate.weekDay = weekDay;
-
-    return aDate;
-}
-
-Date.prototype.toHebrew = function () {
-
-    var jd, year, month, day, i, count, first;
-
-    jd = this.toJulianDay();
-
-    jd = Math.floor(jd) + 0.5;
-    count = Math.floor(((jd - Epoch.Hebrew.value) * 98496.0) / 35975351.0);
-    year = count - 1;
-
-    var hd = new Date(count, 7 - 1, 1);
-    hd.setCalendarType(CalendarType.Hebrew);
-    var cjd = hd.toJulianDay();
-
-    for (i = count; jd >= cjd ; i++) {
-        year++;
-        hd.setYear(i + 1);
-        cjd = hd.toJulianDay();
     }
 
-    hd.setYear(year);
-    hd.setMonth(0);
+    var toJulianDay = function (date, calendarType) {
 
-    first = (jd < hd.toJulianDay()) ? 7 : 1;
-    month = first;
+        var year = date.Year;
+        var month = date.Month;
+        var day = date.Day;
 
-    hd.setMonth(first - 1);
-    hd.setDate(Utils.hebrewMonthDays(year, first));
+        var jDay;
 
-    for (i = first; jd > hd.toJulianDay() ; i++) {
-        month++;
-        hd.setMonth(i);
-        hd.setDate(Utils.hebrewMonthDays(year, i + 1));
-    }
+        switch (calendarType) {
 
-    hd.setDate(1);
-    hd.setMonth(month - 1);
+            // Convert Jalali date to julian day
+            case CalendarType.Jalali:
 
-    day = (jd - hd.toJulianDay()) + 1;
-    hd.setDate(day);
+                var epbase, epyear;
 
-    return hd;
-}
+                epbase = year - ((year >= 0) ? 474 : 473);
+                epyear = 474 + Utils.mod(epbase, 2820);
 
-Date.prototype.toJulianDay = function () {
+                jDay = day +
+                        ((month <= 7) ?
+                            ((month - 1) * 31) :
+                            (((month - 1) * 30) + 6)
+                        ) +
+                        Math.floor(((epyear * 682) - 110) / 2816) +
+                        (epyear - 1) * 365 +
+                        Math.floor(epbase / 2820) * 1029983 +
+                        (Epoch.Jalali.value - 1);
 
-    var year = this.getFullYear();
-    var month = this.getMonth() + 1;
-    var day = this.getDate();
-
-    var jDay;
-
-    switch (this.getCalendarType()) {
-
-        // Convert Jalali date to julian day
-        case CalendarType.Jalali:
-
-            var epbase, epyear;
-
-            epbase = year - ((year >= 0) ? 474 : 473);
-            epyear = 474 + Utils.mod(epbase, 2820);
-
-            jDay = day +
-                    ((month <= 7) ?
-                        ((month - 1) * 31) :
-                        (((month - 1) * 30) + 6)
-                    ) +
-                    Math.floor(((epyear * 682) - 110) / 2816) +
-                    (epyear - 1) * 365 +
-                    Math.floor(epbase / 2820) * 1029983 +
-                    (Epoch.Jalali.value - 1);
-
-            break;
-
-            // Convert Gregorian date to Julian day
-        case CalendarType.Gregorian:
-
-            jDay = (Epoch.Gregorian.value - 1) +
-                    (365 * (year - 1)) +
-                    Math.floor((year - 1) / 4) +
-                    (-Math.floor((year - 1) / 100)) +
-                    Math.floor((year - 1) / 400) +
-                    Math.floor((((367 * month) - 362) / 12) +
-                    ((month <= 2) ? 0 : (this.isLeapYear() ? -1 : -2)) +
-                    day);
-
-            break;
-
-            // Convert Islamic date to Julian day
-        case CalendarType.Islamic:
-
-            jDay = (day +
-                    Math.ceil(29.5 * (month - 1)) +
-                    (year - 1) * 354 +
-                    Math.floor((3 + (11 * year)) / 30) +
-                    Epoch.Islamic.value) - 1;
-
-            break;
-
-        case CalendarType.Hebrew:
-
-            var mon, months;
-
-            months = Utils.hebrewMonths(year);
-            jDay = Epoch.Hebrew.value + Utils.hebrewDelay1(year) + Utils.hebrewDelay2(year) + day + 1;
-
-            if (month < 7) {
-                for (mon = 7; mon <= months; mon++) {
-                    jDay += Utils.hebrewMonthDays(year, mon);
-                }
-                for (mon = 1; mon < month; mon++) {
-                    jDay += Utils.hebrewMonthDays(year, mon);
-                }
-            }
-            else {
-                for (mon = 7; mon < month; mon++) {
-                    jDay += Utils.hebrewMonthDays(year, mon);
-                }
-            }
-
-            break;
-    }
-
-    return jDay;
-}
-
-Date.prototype.getWeekDay = function () {
-
-    if (this.weekDay == undefined)
-        this.weekDay = Utils.julianWeekDay(this.toJulianDay());
-
-    return this.weekDay;
-}
-
-Date.prototype.isLeapYear = function () {
-
-    var year = this.getFullYear();
-    var isLeapYear;
-
-    switch (this.getCalendarType()) {
-        case CalendarType.Gregorian:
-            isLeapYear = ((year % 4) == 0) &&
-            (!(((year % 100) == 0) && ((year % 400) != 0)));
-            break;
-
-        case CalendarType.Jalali:
-            isLeapYear = ((((((year - ((year > 0) ? 474 : 473)) % 2820) + 474) + 38) * 682) % 2816) < 682;
-            break;
-
-        case CalendarType.Islamic:
-            isLeapYear = ((((year * 11) + 14) % 30) < 11);
-            break;
-        case CalendarType.Hebrew:
-            isLeapYear = Utils.mod(((year * 7) + 1), 19) < 7;
-            break;
-    }
-
-    return isLeapYear;
-}
-
-Date.prototype.toLocalizedString = function (local, calendar, format, special) {
-
-    var output;
-
-    if (calendar == undefined)
-        calendar = this.getCalendarType();
-
-    var day = (this.getDate() < 10 ? '0' + this.getDate() : this.getDate());
-    day = Utils.formatNumber(day, local);
-
-    var year = this.getFullYear();
-
-    if (special != undefined && calendar == CalendarType.Jalali) {
-        switch (special) {
-            case SpecialCalendar.Royal:
-                year += 1180;
                 break;
-            case SpecialCalendar.Iranian:
-                year += 2346;
+
+                // Convert Gregorian date to Julian day
+            case CalendarType.Gregorian:
+
+                jDay = (Epoch.Gregorian.value - 1) +
+                        (365 * (year - 1)) +
+                        Math.floor((year - 1) / 4) +
+                        (-Math.floor((year - 1) / 100)) +
+                        Math.floor((year - 1) / 400) +
+                        Math.floor((((367 * month) - 362) / 12) +
+                        ((month <= 2) ? 0 : (isLeapYear(year, calendarType) ? -1 : -2)) +
+                        day);
+
+                break;
+
+                // Convert Islamic date to Julian day
+            case CalendarType.Islamic:
+
+                jDay = (day +
+                        Math.ceil(29.5 * (month - 1)) +
+                        (year - 1) * 354 +
+                        Math.floor((3 + (11 * year)) / 30) +
+                        Epoch.Islamic.value) - 1;
+
+                break;
+
+            case CalendarType.Hebrew:
+
+                jDay = hebrew_to_jd(year, month, day);
+
                 break;
         }
+
+        return jDay;
     }
 
-    year = Utils.formatNumber(year, local);
+    var isLeapYear = function (year, calendarType) {
 
-    output = Resources.DayNames(local, calendar, format)[this.getWeekDay()] + ' ' + day + ' ' + Resources.MonthNames(local, calendar, format)[this.getMonth()] + ' ' + year;
+        var isLeapYear;
 
-    return output;
-}
+        switch (calendarType) {
+            case CalendarType.Gregorian:
+                isLeapYear = ((year % 4) == 0) &&
+                (!(((year % 100) == 0) && ((year % 400) != 0)));
+                break;
 
-Date.prototype.totalJulianDaysUntilToday = function () {
+            case CalendarType.Jalali:
+                isLeapYear = ((((((year - ((year > 0) ? 474 : 473)) % 2820) + 474) + 38) * 682) % 2816) < 682;
+                break;
 
-    var dateNow = new Date();
-    var jdNow = dateNow.toJulianDay();
+            case CalendarType.Islamic:
+                isLeapYear = ((((year * 11) + 14) % 30) < 11);
+                break;
+            case CalendarType.Hebrew:
+                isLeapYear = Utils.mod(((year * 7) + 1), 19) < 7;
+                break;
+        }
 
-    var thisGregorianDate = this.toGregorian();
-    var thisJd = thisGregorianDate.toJulianDay();
+        return isLeapYear;
+    }
 
-    return jdNow - thisJd;
-}
+    var toJalali = function (date, calendarType) {
 
-Date.prototype.totalJulianDaysUntil = function (d) {
+        var jd, year, month, day, depoch, cycle, cyear, ycycle, aux1, aux2, yday;
 
-    var jd = d.toJulianDay();
+        //  Update Julian day
+        jd = toJulianDay(date, calendarType) +
+               (Math.floor(0 + 60 * (0 + 60 * 0) + 0.5) / 86400.0);
 
-    var thisGregorianDate = this.toGregorian();
-    var thisJd = thisGregorianDate.toJulianDay();
+        var weekDay = Utils.julianWeekDay(jd);
 
-    return jd - thisJd;
+        jd = Math.floor(jd) + 0.5;
+
+        // first day of year 475
+        var tmpDate = new myDate(475, 1, 1);
+
+        depoch = jd - toJulianDay(tmpDate, CalendarType.Jalali);
+        cycle = Math.floor(depoch / 1029983);
+        cyear = Utils.mod(depoch, 1029983);
+
+        if (cyear == 1029982) {
+            ycycle = 2820;
+        }
+        else {
+            aux1 = Math.floor(cyear / 366);
+            aux2 = Utils.mod(cyear, 366);
+            ycycle = Math.floor(((2134 * aux1) + (2816 * aux2) + 2815) / 1028522) +
+                        aux1 + 1;
+        }
+        year = ycycle + (2820 * cycle) + 474;
+
+        if (year <= 0) {
+            year--;
+        }
+
+        tmpDate.Year = year;
+        yday = (jd - toJulianDay(tmpDate, CalendarType.Jalali)) + 1;
+        month = (yday <= 186) ? Math.ceil(yday / 31) : Math.ceil((yday - 6) / 30);
+
+        tmpDate.Month = month;
+        day = (jd - toJulianDay(tmpDate, CalendarType.Jalali)) + 1;
+
+        tmpDate.Day = day;
+        tmpDate.WeekDay = weekDay;
+
+        return tmpDate;
+    }
+
+    var toGregorian = function (date, calendarType) {
+
+        var wjd, depoch, quadricent, dqc, cent, dcent, quad, dquad, yindex, dyindex, year, yearday, leapadj;
+
+        var jd = toJulianDay(date, calendarType);
+        var weekDay = Utils.julianWeekDay(jd);
+
+        wjd = Math.floor(jd - 0.5) + 0.5;
+        depoch = wjd - Epoch.Gregorian.value;
+        quadricent = Math.floor(depoch / 146097);
+        dqc = Utils.mod(depoch, 146097);
+        cent = Math.floor(dqc / 36524);
+        dcent = Utils.mod(dqc, 36524);
+        quad = Math.floor(dcent / 1461);
+        dquad = Utils.mod(dcent, 1461);
+        yindex = Math.floor(dquad / 365);
+        year = (quadricent * 400) + (cent * 100) + (quad * 4) + yindex;
+
+        if (!((cent == 4) || (yindex == 4))) {
+            year++;
+        }
+
+        // first day of Year
+        var tmpDate = new myDate(year, 1, 1);
+
+        yearday = wjd - toJulianDay(tmpDate, CalendarType.Gregorian);
+
+        // first day of March
+        tmpDate.Month = 3;
+
+        leapadj = ((wjd < toJulianDay(tmpDate, CalendarType.Gregorian)) ? 0 : (isLeapYear(year, CalendarType.Gregorian) ? 1 : 2));
+
+        var month = Math.floor((((yearday + leapadj) * 12) + 373) / 367);
+
+        // set first day of Month
+        tmpDate.Month = month;
+
+        day = (wjd - toJulianDay(tmpDate, CalendarType.Gregorian)) + 1;
+
+        tmpDate.Day = day;
+        tmpDate.WeekDay = weekDay;
+
+        return tmpDate;
+    }
+
+    var toIslamic = function (date, calendarType) {
+
+        var jd, year, month, day;
+
+        jd = Math.floor(toJulianDay(date, calendarType)) + 0.5;
+
+        var weekDay = Utils.julianWeekDay(jd);
+
+        year = Math.floor(((30 * (jd - Epoch.Islamic.value)) + 10646) / 10631);
+
+        // first day of current year
+        var tmpDate = new myDate(year, 1, 1);
+
+        month = Math.min(12,
+                Math.ceil((jd - (29 + toJulianDay(tmpDate, CalendarType.Islamic))) / 29.5) + 1);
+        tmpDate.Month = month;
+
+        day = (jd - toJulianDay(tmpDate, CalendarType.Islamic)) + 1;
+        tmpDate.Day = day;
+        tmpDate.WeekDay = weekDay;
+
+        return tmpDate;
+    }
+
+    var toHebrew = function (date, calendarType) {
+
+        var jd = toJulianDay(date, calendarType);
+        var hd = jd_to_hebrew(jd);
+        var tmpDate = new myDate(hd[0], hd[1], hd[2]);
+
+        return tmpDate;
+    }
+
+    var init = function (date) {
+
+        if (date == undefined) return;
+
+        _year = date.Year;
+        _month = date.Month;
+        _day = date.Day;
+        _weekDay = date.WeekDay;
+    }
+
+    switch (_calendarType) {
+        case CalendarType.Jalali:
+            convertedDate = toJalali(inputDate, _calendarType);
+            break;
+        case CalendarType.Gregorian:
+            convertedDate = toGregorian(inputDate, _calendarType);
+            break;
+        case CalendarType.Islamic:
+            convertedDate = toIslamic(inputDate, _calendarType);
+            break;
+        case CalendarType.Hebrew:
+            convertedDate = toHebrew(inputDate, _calendarType);
+            break;
+    }
+
+    // initialize the dateCalendar using converted Date container class
+    init(convertedDate);
+
+    //public methods
+    this.toString = function () {
+
+        var output;
+
+        if (_local == undefined) _local = Local.English;
+        if (_format == undefined) _format = DisplayFormat.Long;
+
+        var day = (_day < 10 ? '0' + _day : _day);
+        day = Utils.formatNumber(day, _local);
+
+        var year = _year;
+
+        if (_special != undefined && _calendarType == CalendarType.Jalali) {
+            switch (_special) {
+                case SpecialCalendar.Royal:
+                    year += 1180;
+                    break;
+                case SpecialCalendar.Iranian:
+                    year += 2346;
+                    break;
+            }
+        }
+
+        year = Utils.formatNumber(year, _local);
+
+        output = Resources.DayNames(_local, _calendarType, _format)[convertedDate.WeekDay] +
+                    ' ' +
+                    day +
+                    ' ' +
+                    Resources.MonthNames(_local, _calendarType, _format)[_month - 1] +
+                    ' ' +
+                    year;
+
+        return output;
+
+    }
+    this.toLocalizedString = function (local, format, special) {
+
+        if (local == undefined) local = _local;
+        if (local == undefined) local = Local.English;
+        if (format == undefined) format = _format;
+        if (format == undefined) format = DisplayFormat.Long;
+
+        var output;
+        var calendar = this.getCalendarType();
+
+        var day = (this.getDate() < 10 ? '0' + this.getDate() : this.getDate());
+        day = Utils.formatNumber(day, local);
+
+        var year = this.getFullYear();
+
+        if (special != undefined && calendar == CalendarType.Jalali) {
+            switch (special) {
+                case SpecialCalendar.Royal:
+                    year += 1180;
+                    break;
+                case SpecialCalendar.Iranian:
+                    year += 2346;
+                    break;
+            }
+        }
+
+        year = Utils.formatNumber(year, local);
+
+        output = Resources.DayNames(local, calendar, format)[this.getWeekDay()] + ' ' +
+                    day + ' ' +
+                    Resources.MonthNames(local, calendar, format)[this.getMonth() - 1] + ' ' +
+                    year;
+
+        return output;
+    }
+
+    this.getFullYear = function () { return _year; }
+    this.getMonth = function () { return _month; }
+    this.getDate = function () { return _day; }
+    this.getDay = function () { return _weekDay; }
+    this.getCalendarType = function () { return _calendarType; }
+
+    this.toJalali = function () {
+
+        if (_year == undefined || _month == undefined || _day == undefined) return;
+
+        var tmpDate = new myDate(_year, _month, _day);
+        var jalaliDate = toJalali(tmpDate, _calendarType);
+
+        var jalaliDateString = jalaliDate.Year + '-' + jalaliDate.Month + '-' + jalaliDate.Day;
+        var jalaliDateCalendar = new DateCalendar(jalaliDateString, CalendarType.Jalali);
+
+        return jalaliDateCalendar;
+    }
+    this.toGregorian = function () {
+
+        if (_year == undefined || _month == undefined || _day == undefined) return;
+
+        var tmpDate = new myDate(_year, _month, _day);
+        var gregorianDate = toGregorian(tmpDate, _calendarType);
+
+        var gregorianDateString = gregorianDate.Year + '-' + gregorianDate.Month + '-' + gregorianDate.Day;
+        var gregorianDateCalendar = new DateCalendar(gregorianDateString, CalendarType.Gregorian);
+
+        return gregorianDateCalendar;
+    }
+    this.toIslamic = function () {
+
+        if (_year == undefined || _month == undefined || _day == undefined) return;
+
+        var tmpDate = new myDate(_year, _month, _day);
+        var islamicDate = toIslamic(tmpDate, _calendarType);
+
+        var islamicDateString = islamicDate.Year + '-' + islamicDate.Month + '-' + islamicDate.Day;
+        var islamicDateCalendar = new DateCalendar(islamicDateString, CalendarType.Islamic);
+
+        return islamicDateCalendar;
+    }
+    this.toHebrew = function () {
+
+        if (_year == undefined || _month == undefined || _day == undefined) return;
+
+        var tmpDate = new myDate(_year, _month, _day);
+        var hebrewDate = toHebrew(tmpDate, _calendarType);
+
+        var hebrewDateString = hebrewDate.Year + '-' + hebrewDate.Month + '-' + hebrewDate.Day;
+        var hebrewDateCalendar = new DateCalendar(hebrewDateString, CalendarType.Hebrew);
+
+        return hebrewDateCalendar;
+    }
+    this.totalJulianDaysUntilToday = function () {
+
+        var dateNow = new DateCalendar();
+        var jdNow = dateNow.toJulianDay();
+
+        var thisGregorianDate = this.toGregorian();
+        var thisJd = thisGregorianDate.toJulianDay();
+
+        return jdNow - thisJd;
+    }
+    this.totalJulianDaysUntil = function (d) {
+
+        var jd = d.toJulianDay();
+
+        var thisGregorianDate = this.toGregorian();
+        var thisJd = thisGregorianDate.toJulianDay();
+
+        return jd - thisJd;
+    }
+
+    this.setLocal = function (local) {
+
+        if (local == undefined) local = Local.English;
+        _local = local;
+    }
+    this.setFormat = function (format) {
+
+        if (format == undefined) format = DisplayFormat.Long;
+        _format = format;
+    }
 }
 
 var Utils = {
@@ -391,86 +479,7 @@ var Utils = {
         return a - (b * Math.floor(a / b));
     },
 
-    hebrewDelay1: function (year) {
 
-        var months, days, parts;
-
-        months = Math.floor(((235 * year) - 234) / 19);
-        parts = 12084 + (13753 * months);
-        day = (months * 29) + Math.floor(parts / 25920);
-
-        if (Utils.mod((3 * (day + 1)), 7) < 3) {
-            day++;
-        }
-
-        return day;
-    },
-
-    // Check for delay in start of new year due to length of adjacent years
-    hebrewDelay2: function (year) {
-        var last, present, next;
-
-        last = Utils.hebrewDelay1(year - 1);
-        present = Utils.hebrewDelay1(year);
-        next = Utils.hebrewDelay1(year + 1);
-
-        return ((next - present) == 356) ? 2 : (((present - last) == 382) ? 1 : 0);
-    },
-
-    // Hebrew months in leap year are 13 instead of 12
-    hebrewMonths: function (year) {
-
-        var hd = new Date(year, 0, 1);
-        hd.setCalendarType(CalendarType.Hebrew);
-
-        return hd.isLeapYear() ? 13 : 12;
-    },
-
-    // The days count in a hebrew year
-    hebrewDays: function (year) {
-
-        var hd1 = new Date(year + 1, 7 - 1, 1);
-        hd1.setCalendarType(CalendarType.Hebrew);
-
-        var hd2 = new Date(year, 7 - 1, 1);
-        hd2.setCalendarType(CalendarType.Hebrew);
-
-        return hd1.toJulianDay() - hd2.toJulianDay();
-    },
-
-    //  How many days are in a given month of a given year
-    hebrewMonthDays: function (year, month) {
-
-        //  First of all, dispose of fixed-length 29 day months
-
-        if (month == 2 || month == 4 || month == 6 || month == 10 || month == 13) {
-            return 29;
-        }
-
-        //  If it's not a leap year, Adar has 29 days
-        var hd = new Date(year, 0, 1);
-        hd.setCalendarType(CalendarType.Hebrew);
-
-        if (month == 12 && !hd.isLeapYear(year)) {
-            return 29;
-        }
-
-        //  If it's Heshvan, days depend on length of year
-
-        if (month == 8 && !(Utils.mod(Utils.hebrewDays(year), 10) == 5)) {
-            return 29;
-        }
-
-        //  Similarly, Kislev varies with the length of year
-
-        if (month == 9 && (Utils.mod(Utils.hebrewDays(year), 10) == 3)) {
-            return 29;
-        }
-
-        //  Nope, it's a 30 day month
-
-        return 30;
-    }
 }
 
 var CalendarType = {
@@ -755,4 +764,131 @@ var Resources = {
 
         return digits;
     }
+}
+
+//to be refactored
+function hebrew_leap(year) {
+    return Utils.mod(((year * 7) + 1), 19) < 7;
+}
+
+//  How many months are there in a Hebrew year (12 = normal, 13 = leap)
+
+function hebrew_year_months(year) {
+    return hebrew_leap(year) ? 13 : 12;
+}
+
+//  Test for delay of start of new year and to avoid
+//  Sunday, Wednesday, and Friday as start of the new year.
+
+function hebrew_delay_1(year) {
+    var months, days, parts;
+
+    months = Math.floor(((235 * year) - 234) / 19);
+    parts = 12084 + (13753 * months);
+    day = (months * 29) + Math.floor(parts / 25920);
+
+    if (Utils.mod((3 * (day + 1)), 7) < 3) {
+        day++;
+    }
+    return day;
+}
+
+//  Check for delay in start of new year due to length of adjacent years
+
+function hebrew_delay_2(year) {
+    var last, present, next;
+
+    last = hebrew_delay_1(year - 1);
+    present = hebrew_delay_1(year);
+    next = hebrew_delay_1(year + 1);
+
+    return ((next - present) == 356) ? 2 :
+                                     (((present - last) == 382) ? 1 : 0);
+}
+
+//  How many days are in a Hebrew year ?
+
+function hebrew_year_days(year) {
+    return hebrew_to_jd(year + 1, 7, 1) - hebrew_to_jd(year, 7, 1);
+}
+
+//  How many days are in a given month of a given year
+
+function hebrew_month_days(year, month) {
+    //  First of all, dispose of fixed-length 29 day months
+
+    if (month == 2 || month == 4 || month == 6 ||
+        month == 10 || month == 13) {
+        return 29;
+    }
+
+    //  If it's not a leap year, Adar has 29 days
+
+    if (month == 12 && !hebrew_leap(year)) {
+        return 29;
+    }
+
+    //  If it's Heshvan, days depend on length of year
+
+    if (month == 8 && !(Utils.mod(hebrew_year_days(year), 10) == 5)) {
+        return 29;
+    }
+
+    //  Similarly, Kislev varies with the length of year
+
+    if (month == 9 && (Utils.mod(hebrew_year_days(year), 10) == 3)) {
+        return 29;
+    }
+
+    //  Nope, it's a 30 day month
+
+    return 30;
+}
+
+//  Finally, wrap it all up into...
+
+function hebrew_to_jd(year, month, day) {
+    var jd, mon, months;
+
+    months = hebrew_year_months(year);
+    jd = Epoch.Hebrew.value + hebrew_delay_1(year) +
+         hebrew_delay_2(year) + day + 1;
+
+    if (month < 7) {
+        for (mon = 7; mon <= months; mon++) {
+            jd += hebrew_month_days(year, mon);
+        }
+        for (mon = 1; mon < month; mon++) {
+            jd += hebrew_month_days(year, mon);
+        }
+    } else {
+        for (mon = 7; mon < month; mon++) {
+            jd += hebrew_month_days(year, mon);
+        }
+    }
+
+    return jd;
+}
+
+/*  JD_TO_HEBREW  --  Convert Julian date to Hebrew date
+                      This works by making multiple calls to
+                      the inverse function, and is this very
+                      slow.  */
+
+function jd_to_hebrew(jd) {
+    var year, month, day, i, count, first;
+
+    jd = Math.floor(jd) + 0.5;
+    count = Math.floor(((jd - Epoch.Hebrew.value) * 98496.0) / 35975351.0);
+    year = count - 1;
+    for (i = count; jd >= hebrew_to_jd(i, 7, 1) ; i++) {
+        year++;
+    }
+    first = (jd < hebrew_to_jd(year, 1, 1)) ? 7 : 1;
+    month = first;
+    for (i = first; jd > hebrew_to_jd(year, i, hebrew_month_days(year, i)) ; i++) {
+        month++;
+    }
+    day = (jd - hebrew_to_jd(year, month, 1)) + 1;
+    return new Array(year, month, day);
 }
