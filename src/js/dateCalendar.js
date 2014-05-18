@@ -258,7 +258,7 @@ function DateCalendar(date, calendarType) {
 
         var jd = toJulianDay(date, calendarType);
         var hd = jd_to_hebrew(jd);
-        var tmpDate = new myDate(hd[0], hd[1], hd[2]);
+        var tmpDate = new myDate(hd[0], hd[1], hd[2], Utils.julianWeekDay(jd));
 
         return tmpDate;
     }
@@ -356,7 +356,7 @@ function DateCalendar(date, calendarType) {
 
         year = Utils.formatNumber(year, local);
 
-        output = Resources.DayNames(local, calendar, format)[this.getWeekDay()] + ' ' +
+        output = Resources.DayNames(local, calendar, format)[this.getDay()] + ' ' +
                     day + ' ' +
                     Resources.MonthNames(local, calendar, format)[this.getMonth() - 1] + ' ' +
                     year;
@@ -418,6 +418,12 @@ function DateCalendar(date, calendarType) {
 
         return hebrewDateCalendar;
     }
+    this.toJulianDay = function () {
+
+        var tmpDate = new myDate(_year, _month, _day, _weekDay);
+        return toJulianDay(tmpDate, _calendarType);
+
+    }
     this.totalJulianDaysUntilToday = function () {
 
         var dateNow = new DateCalendar();
@@ -447,6 +453,10 @@ function DateCalendar(date, calendarType) {
 
         if (format == undefined) format = DisplayFormat.Long;
         _format = format;
+    }
+    this.isLeapYear = function () {
+
+        return isLeapYear(this.getFullYear(), this.getCalendarType());
     }
 }
 

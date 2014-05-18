@@ -33,17 +33,8 @@ With the method toLocalizedString() you could write the converted date to the ca
 
 Example:
 
-	default toString() method would use gregorian month and day names
-
-	var jalaliDate = new Date("1393-02-19");
-	jalaliDate.setCalendarType(CalendarType.Jalali);
+	var jalaliDate = new DateCalendar("1393-02-19", CalendarType.Jalali);
 	jalaliDate.toString()
-	
-	Tue Feb 19 1393 01:00:00 GMT+0100 (W. Europe Standard Time)
-
-	method toLocalizedString() fixes this problem
-
-	jalaliDate.toLocalizedString()
 	
 	Jome 19 Ordibehesht 1393
 
@@ -65,8 +56,7 @@ Example:
 
 	جمعه ۱۹ اردیبهشت ۳۷۳۹
 
-	var islamicDate = new Date("1435-07-09");
-	islamicDate.setCalendarType(CalendarType.Islamic);
+	var islamicDate = new DateCalendar("1435-07-09", CalendarType.Islamic);
 	islamicDate.toLocalizedString()
 
 	al-jum`a 09 Rajab 1435
@@ -75,8 +65,7 @@ Example:
 
 	الجمعة‬ ۰۹ رجب ۱۴۳۵
 
-	var hebrewDate = new Date("5774-02-09");
-	hebrewDate.setCalendarType(CalendarType.Hebrew);
+	var hebrewDate = new DateCalendar("5774-02-09", CalendarType.Hebrew);
 	hebrewDate.toLocalizedString()
 
 	Yom Shishi 09 Iyyar 5774
@@ -92,15 +81,12 @@ Example:
 
 	Example:
 
-		var birthDate = new Date("1350-06-16");
-		birthDate.setCalendarType(CalendarType.Jalali);
+		var aDate = new DateCalendar("1350-06-16", CalendarType.Jalali);
+		var today = new DateCalendar("1393-02-19", CalendarType.Jalali);
 
-		var today = new Date("1393-02-19");
-		today.setCalendarType(CalendarType.Jalali);
+		aDate.totalJulianDaysUntil(today);
 
-		birthDate.totalJulianDaysUntil(today);
-
-		15585 // how many days am i old unitl today
+		15585 // how many days unitl today
 
 dateCalendar has some unitTests using QUnit, to start the unitTests, just open dateCalendarTests.html in your browser. unitTest methods are in dateCalendarTests.js
 
