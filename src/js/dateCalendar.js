@@ -356,10 +356,23 @@ function DateCalendar(date, calendarType) {
 
         year = Utils.formatNumber(year, local);
 
-        output = Resources.DayNames(local, calendar, format)[this.getDay()] + ' ' +
-                    day + ' ' +
-                    Resources.MonthNames(local, calendar, format)[this.getMonth() - 1] + ' ' +
-                    year;
+        if (format == DisplayFormat.Simple) {
+
+            var m = this.getMonth() - 1;
+
+            if (m < 10) m = '0' + m;
+
+            m = Utils.formatNumber(m, local);
+
+            output = year + '/' +
+                        m + '/' +
+                        day;
+        }
+        else
+            output = Resources.DayNames(local, calendar, format)[this.getDay()] + ' ' +
+                        day + ' ' +
+                        Resources.MonthNames(local, calendar, format)[this.getMonth() - 1] + ' ' +
+                        year;
 
         return output;
     }
@@ -519,7 +532,7 @@ var Local = {
 
 var DisplayFormat = {
 
-    //    Abbreviation: { value: 1 },
+    Simple: { value: 1 },
     Short: { value: 2 },
     Long: { value: 3 }
 }
